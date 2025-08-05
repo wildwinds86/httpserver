@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response, NextFunction } from 'express';
 import path from "path";
+import "./config.js";
 
 function middlewareLogResponses(req: Request, res: Response, next: NextFunction) {
   (res as any).on("finish", () => {
