@@ -1,29 +1,21 @@
 import express from "express";
-import { Request, Response, NextFunction } from 'express';
-import path from "path";
-import "./config.js";
-
-function middlewareLogResponses(req: Request, res: Response, next: NextFunction) {
-  (res as any).on("finish", () => {
-    const status = (res as any).statusCode;
-    if (status < 200 || status >= 300) {
-      console.log(`[NON-OK] ${req.method} ${req.url} - Status: ${status}`)
-    }
-
-  });
-  next();
-}
+//import path from "path";
+import {handlerMetrics, handlerReset} from "./api/metrics.js"
+import {
+  middlewareLogResponses,
+  middlewareMetricsInc,
+} from "./api/middleware.js";
+import {handlerReadiness} from "./api/readiness.js"
 
 const app = express();
 const PORT = 8080;
 
-app.use("/app", express.static("./src/app"));
 app.use(middlewareLogResponses);
 
-app.get("/healthz", (req, res) => {
-  res.set({ "Content-Type": "text/plain; charset=utf-8" });
-  res.send("OK");
-})
+app.use("/app", middlewareMetricsInc, express.static("./src/app"));
+app.get("/api/healthz", handlerReadiness);
+app.get("/admin/metrics", handlerMetrics);
+app.post("/admin/reset", handlerReset);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
