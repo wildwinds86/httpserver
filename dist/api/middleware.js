@@ -1,4 +1,5 @@
 import { config } from "../config.js";
+import { respondWithError } from "./json.js";
 export function middlewareLogResponses(req, res, next) {
     res.on("finish", () => {
         const status = res.statusCode;
@@ -13,4 +14,10 @@ export function middlewareMetricsInc(req, res, next) {
         config.fileServerHits++;
     });
     next();
+}
+export function middlewareErrorHandler(err, req, res, next) {
+    const statusCode = 500;
+    const errorMessage = "Something went wrong on our end";
+    console.error(err.message);
+    respondWithError(res, statusCode, errorMessage);
 }

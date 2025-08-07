@@ -1,7 +1,8 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { config } from "../config.js";
 
-export async function handlerMetrics(_: Request, res: Response) {
+export async function handlerMetrics(_: Request, res: Response, next: NextFunction) {
+  try {
     let htmlString = `<html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
@@ -11,10 +12,17 @@ export async function handlerMetrics(_: Request, res: Response) {
     res.set({ "Content-Type": "text/html; charset=utf-8" });
     res.send(htmlString);
     res.end();
+  } catch (err) {
+    next(err);
+  }
 }
 
-export async function handlerReset(_: Request, res: Response) {
+export async function handlerReset(_: Request, res: Response, next: NextFunction) {
+  try {
     res.set({ "Content-Type": "text/plain; charset=utf-8" });
     res.send(`Hits reset to zero`);
     config.fileServerHits = 0;
+  } catch (err) {
+    next(err);
+  }
 }
