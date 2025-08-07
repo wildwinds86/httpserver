@@ -1,5 +1,6 @@
 import { config } from "../config.js";
 import { respondWithError } from "./json.js";
+import { ErrorBadRequest, ErrorForbidden, ErrorNotFound, ErrorUnauthorised } from "./errors.js";
 export function middlewareLogResponses(req, res, next) {
     res.on("finish", () => {
         const status = res.statusCode;
@@ -16,8 +17,19 @@ export function middlewareMetricsInc(req, res, next) {
     next();
 }
 export function middlewareErrorHandler(err, req, res, next) {
-    const statusCode = 500;
-    const errorMessage = "Something went wrong on our end";
+    let statusCode = 500;
+    if (err instanceof ErrorBadRequest) {
+        statusCode = 400;
+    }
+    if (err instanceof ErrorUnauthorised) {
+        statusCode = 401;
+    }
+    if (err instanceof ErrorForbidden) {
+        statusCode = 403;
+    }
+    if (err instanceof ErrorNotFound) {
+        statusCode = 404;
+    }
     console.error(err.message);
-    respondWithError(res, statusCode, errorMessage);
+    respondWithError(res, statusCode, err.message);
 }
