@@ -1,5 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import { config } from "../config.js";
+//import { deleteAllUsers } from "../db/queries/users.js"
+import { ErrorForbidden } from "./errors.js";
+import { reset } from "../db/queries/users.js";
 
 export async function handlerMetrics(_: Request, res: Response) {
   let htmlString = `<html>
@@ -15,8 +18,13 @@ export async function handlerMetrics(_: Request, res: Response) {
 
 
 export async function handlerReset(_: Request, res: Response) {
-
-  res.set({ "Content-Type": "text/plain; charset=utf-8" });
-  res.send(`Hits reset to zero`);
+  if (config.api.platform !== "dev") {
+    console.log(config.api.platform);
+    throw new ErrorForbidden("Reset is only allowed in dev environment.");
+  }
   config.api.fileServerHits = 0;
+  await reset();
+
+  res.write("Hits reset to 0");
+  res.end();
 }
