@@ -1,6 +1,6 @@
 import { respondWithJSON } from "./json.js";
 import { ErrorBadRequest } from "./errors.js";
-import { createChirp } from "../db/queries/chirps.js";
+import { createChirp, getAllChirps } from "../db/queries/chirps.js";
 export async function handlerCreateChirp(req, res) {
     const params = req.body;
     const maxChirpLength = 140;
@@ -29,4 +29,8 @@ export async function handlerCreateChirp(req, res) {
         body: chirp.body,
         userId: chirp.user_id
     });
+}
+export async function handlerGetChirps(req, res) {
+    const chirps = await getAllChirps();
+    respondWithJSON(res, 200, chirps);
 }

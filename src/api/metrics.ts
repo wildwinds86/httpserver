@@ -16,7 +16,6 @@ export async function handlerMetrics(_: Request, res: Response) {
   res.end();
 }
 
-
 export async function handlerReset(_: Request, res: Response) {
   if (config.api.platform !== "dev") {
     console.log(config.api.platform);

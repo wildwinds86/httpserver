@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
 import { ErrorBadRequest } from "./errors.js";
-import { createChirp } from "../db/queries/chirps.js"
+import { createChirp, getAllChirps } from "../db/queries/chirps.js"
 
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters = {
@@ -41,6 +41,10 @@ export async function handlerCreateChirp(req: Request, res: Response) {
     updatedAt: chirp.updatedAt,
     body: chirp.body,
     userId: chirp.user_id
-  })
+  });
+} 
 
+export async function handlerGetChirps(req: Request, res: Response){
+  const chirps = await getAllChirps();
+  respondWithJSON(res, 200, chirps);
 }
